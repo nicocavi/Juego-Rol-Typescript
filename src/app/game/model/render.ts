@@ -40,6 +40,24 @@ export class Render {
         this.ctx.fillStyle = color;
         this.ctx.fillText(text, x, y);
     }
+
+    drawImage(spriteUrl: string, tileX: number, tileY: number, tileWidth: number, tileHeight: number, x: number, y: number, width: number, height: number ): void {
+        const img = new Image();
+        img.src = spriteUrl;
+        img.onload = () => {
+            this.ctx.drawImage(
+                img,
+                tileX,
+                tileY,
+                tileWidth,
+                tileHeight,
+                x * width,
+                y * height,
+                width,
+                height
+            );
+        };
+    }
     
     drawTerrain(): void {
         for (const layer of this.terrain.layers) {
@@ -52,22 +70,7 @@ export class Render {
                         if (tileIndex >= 0) {
                             const tileX = (tileIndex % this.tileset.columns) * this.tileset.tilewidth;
                             const tileY = Math.floor(tileIndex / this.tileset.columns) * this.tileset.tileheight;
-                            const img = new Image();
-                            img.src = PATH_IMG+this.tileset.image;
-                            console.log({tileX, tileY, img, x, y});
-                            img.onload = () => {
-                                this.ctx.drawImage(
-                                    img,
-                                    tileX,
-                                    tileY,
-                                    this.tileset.tilewidth,
-                                    this.tileset.tileheight,
-                                    x * this.terrain.tilewidth,
-                                    y * this.terrain.tileheight,
-                                    this.terrain.tilewidth,
-                                    this.terrain.tileheight
-                                );
-                            };
+                            this.drawImage(PATH_IMG+this.tileset.image, tileX, tileY, this.tileset.tilewidth, this.tileset.tileheight, x, y, this.terrain.tilewidth, this.terrain.tileheight);
                         }
                     }
                 }
