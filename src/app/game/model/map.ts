@@ -1,62 +1,53 @@
+import { map } from 'rxjs';
+import { GameObject } from './gameObject';
 import { MapJSON, TileSet } from './types';
+import { loadJSON } from './loadJSON';
+import { TerrainObject } from './terrainObject';
 
 const PATH_IMG = 'assets/img/';
 const PATH_TILESETS = 'assets/tilesets/';
 
 export class Map {
-  private mapData: MapJSON;
-  private tilesetData: TileSet;
-  private tilesetImage: HTMLImageElement;
-  
-  constructor(mapData: MapJSON, tilesetData: TileSet) {
-    this.mapData = mapData;
-    this.tilesetData = tilesetData;
+  private terrain: TerrainObject[] = [];
 
-    this.tilesetImage = new Image();
-    this.tilesetImage.src = PATH_TILESETS+tilesetData.image; // ruta relativa
+  async load(mapData: MapJSON) {
+    await this.processMap(mapData);
   }
-    
 
-  render(ctx: CanvasRenderingContext2D) {
-    if (!this.tilesetImage.complete) return; // esperar a que cargue la imagen
+  private async processMap(mapData: MapJSON): Promise<void> {
+    const layer = mapData.layers.find(
+      (l) => l.name === 'Ground' && l.type === 'tilelayer'
+    );
+    if (layer && layer.data) {
+      const tileset = await loadJSON<TileSet>(
+        PATH_TILESETS + mapData.tilesets[0].source
+      );
 
-    // --- 1. Renderizar capa Ground ---
-    const ground = this.mapData.layers.find((l) => l.name === 'Ground');
-    if (ground && ground.type === 'tilelayer' && ground.data) {
-      for (let row = 0; row < ground.height!; row++) {
-        for (let col = 0; col < ground.width!; col++) {
-          const idx = row * ground.width! + col;
-          const gid = ground.data[idx];
+      for (let row = 0; row < layer.height; row++) {
+        for (let col = 0; col < layer.width; col++) {
+          const idx = row * layer.width + col;
+          const gid = layer.data[idx];
+          if (gid > 0) {
+            const firstgid = mapData.tilesets[0].firstgid;
+            const localId = gid - firstgid;
+            const cols = tileset.columns;
+            const tileX = (localId % cols) * tileset.tilewidth;
+            const tileY = Math.floor(localId / cols) * tileset.tileheight;
+            const sprite = new Image();
+            sprite.src = `${PATH_TILESETS}${tileset.image}`;
+            this.terrain.push({
+              x: col * mapData.tilewidth,
+              y: row * mapData.tileheight,
+              width: mapData.tilewidth,
+              height: mapData.tileheight,
+              sprite,
+              tileX,
+              tileY
+            });
+          }
         }
       }
     }
-
-    // --- 2. Renderizar objetos ---
-    const objects = this.mapData.layers.find((l) => l.name === 'Objects');
-    if (objects && objects.type === 'objectgroup' && objects.objects) {
-      for (const obj of objects.objects) {
-        const gid = obj.gid;
-        if (!gid) continue;
-
-        const firstgid = this.mapData.tilesets[0].firstgid;
-        const localId = gid - firstgid;
-
-        const cols = this.tilesetData.columns;
-        const sx = (localId % cols) * this.tilesetData.tilewidth;
-        const sy = Math.floor(localId / cols) * this.tilesetData.tileheight;
-
-        ctx.drawImage(
-          this.tilesetImage,
-          sx,
-          sy,
-          obj.width / 4, // porque tu objeto es 48px pero el tile original es 16px
-          obj.height / 4,
-          obj.x,
-          obj.y - obj.height, // ajustar ancla Y
-          obj.width,
-          obj.height
-        );
-      }
-    }
   }
+
 }
