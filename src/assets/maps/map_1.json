@@ -27,11 +27,11 @@
       "name": "Objects",
       "objects": [
         {
-          "gid": 45,
+          "gid": 813,
           "x": 16,
           "y": 16,
-          "width": 48,
-          "height": 48,
+          "width": 32,
+          "height": 32,
           "name": "Tree"
         }
       ]
@@ -41,6 +41,11 @@
     {
       "firstgid": 1,
       "source": "tileset_1.json"
+    },
+    {
+      "firstgid": 573,
+      "source": "tileset_2.json"
     }
+
   ]
 }

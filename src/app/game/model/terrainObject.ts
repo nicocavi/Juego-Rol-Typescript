@@ -1,5 +1,6 @@
 
 export interface TerrainObject {
+    gid: number;
     tileX: number;
     tileY: number;
     x: number;

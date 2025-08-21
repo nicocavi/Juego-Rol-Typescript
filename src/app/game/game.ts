@@ -26,6 +26,7 @@ export class Game {
     // console.log('Map loaded:', this.map.terrainObjects);
     this.render = new Render(canvas, this.map);
     this.render.addObject(this.player);
+    await this.render.loadTilesets();
     this.render.draw();
   }
 

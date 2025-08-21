@@ -2,7 +2,7 @@ import { GameObject } from "./gameObject";
 
 export class Player implements GameObject {
 
-    id: string;
+    gid: number;
     name: string;
     lvl: number;
     exp: number;
@@ -27,7 +27,7 @@ export class Player implements GameObject {
         height: number,
         urlTileset: string
     ) {
-        this.id = '1';
+        this.gid = 1;
         this.name = name;
         this.lvl = 1;
         this.exp = 0;

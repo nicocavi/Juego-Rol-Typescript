@@ -1,8 +1,8 @@
 {
-  "columns": 22,
-  "image": "terrain/TilesetFloor.png",
-  "imageheight": 352,
-  "imagewidth": 417,
+  "columns": 24,
+  "image": "terrain/TilesetNature.png",
+  "imageheight": 336,
+  "imagewidth": 384,
   "margin": 0,
   "name": "BasicTiles",
   "spacing": 0,
