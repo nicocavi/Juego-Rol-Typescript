@@ -6,7 +6,7 @@ export class Player implements GameObject {
     name: string;
     lvl: number;
     exp: number;
-    speed = 2;
+    speed = 5;
     hp: number;
     maxHp: number;
     x: number;
@@ -16,6 +16,11 @@ export class Player implements GameObject {
     sprite: HTMLImageElement;
     direction: 'up' | 'down' | 'left' | 'right' = 'down';
     isMoving = false;
+    sx = 0;
+    sy = 0;
+    dWidth = 16;
+    dHeight = 16;
+    collidable?: boolean | undefined;
 
     constructor(
         name: string,
@@ -25,7 +30,7 @@ export class Player implements GameObject {
         y: number,
         width: number,
         height: number,
-        urlTileset: string
+        urlTileset: string,
     ) {
         this.gid = 1;
         this.name = name;
@@ -40,6 +45,7 @@ export class Player implements GameObject {
         this.sprite = new Image();
         this.sprite.src = urlTileset;
     }
+   
 
 
 }

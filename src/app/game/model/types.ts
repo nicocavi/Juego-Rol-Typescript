@@ -17,6 +17,7 @@ export interface MapJSON {
 }
 
 export interface TileSet {
+  firstgid: number;
   columns: number;
   image: string;
   imageheight: number;

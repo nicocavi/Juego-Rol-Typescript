@@ -29,18 +29,18 @@ export class Render {
 
   async loadTilesets(): Promise<void> {
     this.tilesets = await Promise.all(
-      this.map.tilesets.map(async (tileset) => {
-        const { image, columns, tileheight, tilewidth } =
-          await loadJSON<TileSet>(`${PATH_TILESETS}${tileset.source}`);
-        const img = await this.loadImage(`${PATH_IMG}${image}`);
-        return {
-          id: tileset.id,
-          tile: img,
-          colums: columns || 1,
-          tileWidth: tilewidth,
-          tileHeight: tileheight,
-        };
-      })
+      this.map.tilesets.map(
+        async ({ firstgid, image, columns, tileheight, tilewidth }) => {
+          const img = await this.loadImage(`${PATH_IMG}${image}`);
+          return {
+            id: firstgid,
+            tile: img,
+            colums: columns || 1,
+            tileWidth: tilewidth,
+            tileHeight: tileheight,
+          };
+        }
+      )
     );
   }
 
@@ -78,8 +78,8 @@ export class Render {
       tileY,
       tileWidth,
       tileHeight,
-      x * width,
-      y * height,
+      x,
+      y,
       width,
       height
     );
@@ -108,15 +108,15 @@ export class Render {
       dHeight,
       dWidth,
     } of this.map.terrainElement) {
-        const { tile } = this.findTileset(gid);
+      const { tile } = this.findTileset(gid);
       this.drawImage(
         tile,
         tileX,
         tileY,
         width,
         height,
-        x,
-        y,
+        x * dWidth,
+        y * dHeight,
         dWidth,
         dHeight
       );
@@ -124,19 +124,11 @@ export class Render {
   }
 
   drawObjects(): void {
-    for (const { gid, x, y, width, height } of this.map.terrainObjects) {
-        const {tile, tileHeight, tileWidth, colums} = this.findTileset(gid);
-      this.drawImage(
-        tile,
-        width,
-        height,
-        width,
-        height,
-        x,
-        y,
-        width,
-        height,
-      );
+    const objects = this.map.terrainObjects.sort((a, b) => a.y - b.y);
+    for (const object of objects) {
+      const { gid, x, y, width, height, sx, sy } = object;
+      const { tile } = this.findTileset(gid);
+      this.drawImage(tile, sx, sy, width, height, x, y, width, height);
     }
   }
 

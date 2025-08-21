@@ -1,5 +1,6 @@
 import { GameObject } from './gameObject';
 import { loadJSON } from './loadJSON';
+import { Player } from './player';
 import { TerrainObject } from './terrainObject';
 import { MapJSON, TileSet } from './types';
 
@@ -9,14 +10,30 @@ const PATH_TILESETS = 'assets/tilesets/';
 export class Map {
   private terrain: TerrainObject[] = [];
   private objects: GameObject[] = [];
-  tilesets: { id: number; source: string }[] = [];
+  tilesets: TileSet[] = [];
 
   async load(mapData: MapJSON) {
-    this.tilesets = mapData.tilesets.map(({ firstgid, source }) => ({
-      id: firstgid,
-      source,
-    }));
+    this.tilesets = await Promise.all(
+      mapData.tilesets.map(async (t) => {
+        const tileset = await loadJSON<TileSet>(`${PATH_TILESETS}${t.source}`);
+        return {
+          ...tileset,
+          firstgid: t.firstgid,
+        };
+      })
+    );
     await this.processMap(mapData);
+  }
+
+  private findTileset(gid: number): TileSet {
+    let tileset = this.tilesets[0];
+    for (let i = this.tilesets.length - 1; i >= 0; i--) {
+      if (gid >= this.tilesets[i].firstgid) {
+        tileset = this.tilesets[i];
+        break;
+      }
+    }
+    return tileset;
   }
 
   private async loadTerrain(mapData: MapJSON): Promise<void> {
@@ -24,13 +41,10 @@ export class Map {
       (l) => l.name === 'Ground' && l.type === 'tilelayer'
     );
     if (layer && layer.data) {
-      const tileset = await loadJSON<TileSet>(
-        PATH_TILESETS + mapData.tilesets[0].source
-      );
-
       for (let row = 0; row < layer.height; row++) {
         for (let col = 0; col < layer.width; col++) {
           const id = layer.data[row * layer.width + col];
+          const tileset = this.findTileset(id);
           const cols = tileset.columns;
           const tileX = (id % cols) * tileset.tilewidth;
           const tileY = Math.floor(id / cols) * tileset.tileheight;
@@ -56,16 +70,19 @@ export class Map {
       (l) => l.name === 'Objects' && l.type === 'objectgroup'
     );
     if (layer && layer.objects) {
-      const tileset = await loadJSON<TileSet>(
-        PATH_TILESETS + mapData.tilesets[0].source
-      );
       layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
-        this.objects.push({
+      const tileset = this.findTileset(gid);
+      console.log(tileset)
+      this.objects.push({
           gid,
           x,
           y,
           width,
           height,
+          sx: ((gid - tileset.firstgid) % tileset.columns) * tileset.tilewidth,
+          sy: Math.floor((gid - tileset.firstgid) / tileset.columns) * tileset.tileheight,
+          dWidth: mapData.tilewidth,
+          dHeight: mapData.tileheight,
         });
       });
     }
@@ -74,6 +91,10 @@ export class Map {
   private async processMap(mapData: MapJSON): Promise<void> {
     await this.loadTerrain(mapData);
     await this.loadObjects(mapData);
+  }
+
+  addPlayer(player: Player): void {
+    this.objects.push(player);
   }
 
   get terrainObjects(): GameObject[] {

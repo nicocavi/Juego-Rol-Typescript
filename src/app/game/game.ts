@@ -23,9 +23,8 @@ export class Game {
     const canvas = document.querySelector('#game') as HTMLCanvasElement;
     this.player = new Player('Cavi', 100, 100, 50, 50, 32, 32, PLAYER_TILESET);
     await this.loadMap();
-    // console.log('Map loaded:', this.map.terrainObjects);
+    this.map.addPlayer(this.player);
     this.render = new Render(canvas, this.map);
-    this.render.addObject(this.player);
     await this.render.loadTilesets();
     this.render.draw();
   }

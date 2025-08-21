@@ -4,5 +4,9 @@ export interface GameObject {
     y: number;
     width: number;
     height: number;
+    sx: number;
+    sy: number;
+    dWidth: number;
+    dHeight: number;
     collidable?: boolean;
 }
