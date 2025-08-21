@@ -1,6 +1,5 @@
 import { GameObject } from './gameObject';
 import { loadJSON } from './loadJSON';
-import { Player } from './player';
 import { TerrainObject } from './terrainObject';
 import { MapJSON, TileSet } from './types';
 
@@ -91,10 +90,6 @@ export class Map {
   private async processMap(mapData: MapJSON): Promise<void> {
     await this.loadTerrain(mapData);
     await this.loadObjects(mapData);
-  }
-
-  addPlayer(player: Player): void {
-    this.objects.push(player);
   }
 
   get terrainObjects(): GameObject[] {

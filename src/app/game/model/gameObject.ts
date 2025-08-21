@@ -8,5 +8,6 @@ export interface GameObject {
     sy: number;
     dWidth: number;
     dHeight: number;
+    tileset?: string;
     collidable?: boolean;
 }

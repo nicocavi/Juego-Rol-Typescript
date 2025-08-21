@@ -18,6 +18,7 @@ export class Render {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   objects: GameObject[] = [];
+  entities: GameObject[] = [];
   tilesets: TileData[] = [];
   map: Map;
 
@@ -28,7 +29,7 @@ export class Render {
   }
 
   async loadTilesets(): Promise<void> {
-    this.tilesets = await Promise.all(
+    const tilesets = await Promise.all(
       this.map.tilesets.map(
         async ({ firstgid, image, columns, tileheight, tilewidth }) => {
           const img = await this.loadImage(`${PATH_IMG}${image}`);
@@ -42,6 +43,8 @@ export class Render {
         }
       )
     );
+
+    this.tilesets = [...tilesets, ...this.tilesets].sort((a, b) => a.id - b.id);
   }
 
   private loadImage(src: string): Promise<HTMLImageElement> {
@@ -53,8 +56,26 @@ export class Render {
     });
   }
 
-  addObject(object: GameObject): void {
-    this.objects.push(object);
+  async addEntity(object: GameObject): Promise<void> {
+    const tileset = await loadJSON<TileSet>(
+      `${PATH_TILESETS}${object.tileset || 'default.json'}`
+    );
+
+    const image = await this.loadImage(
+      `${PATH_IMG}${tileset.image}`
+    );
+
+    this.tilesets.push({
+        id: object.gid,
+        tile: image,
+        colums: tileset.columns || 1,
+        tileWidth: tileset.tilewidth,
+        tileHeight: tileset.tileheight,
+    })
+
+    this.entities.push(object);
+    this.tilesets = this.tilesets.sort((a, b) => a.id - b.id);
+    console.log(this.tilesets)
   }
 
   private clear() {
@@ -124,9 +145,10 @@ export class Render {
   }
 
   drawObjects(): void {
-    const objects = this.map.terrainObjects.sort((a, b) => a.y - b.y);
+    const objects = [...this.map.terrainObjects, ...this.entities].sort((a, b) => a.y - b.y);
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
+      console.log({ gid, x, y, width, height, sx, sy });
       const { tile } = this.findTileset(gid);
       this.drawImage(tile, sx, sy, width, height, x, y, width, height);
     }

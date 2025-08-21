@@ -13,7 +13,6 @@ export class Player implements GameObject {
     y: number;
     width: number;
     height: number;
-    sprite: HTMLImageElement;
     direction: 'up' | 'down' | 'left' | 'right' = 'down';
     isMoving = false;
     sx = 0;
@@ -21,6 +20,7 @@ export class Player implements GameObject {
     dWidth = 16;
     dHeight = 16;
     collidable?: boolean | undefined;
+    tileset: string;
 
     constructor(
         name: string,
@@ -30,9 +30,9 @@ export class Player implements GameObject {
         y: number,
         width: number,
         height: number,
-        urlTileset: string,
+        tileset: string
     ) {
-        this.gid = 1;
+        this.gid = 101; // Reservo los primeros 100 para tiles de recursos
         this.name = name;
         this.lvl = 1;
         this.exp = 0;
@@ -42,8 +42,7 @@ export class Player implements GameObject {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.sprite = new Image();
-        this.sprite.src = urlTileset;
+        this.tileset = tileset;
     }
    
 

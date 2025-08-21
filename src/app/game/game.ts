@@ -4,7 +4,7 @@ import { Player } from './model/player';
 import { MapJSON } from './model/types';
 import { Map } from './model/map';
 
-const PLAYER_TILESET = 'assets/img/player/SpriteSheet.png';
+const PLAYER_TILESET = 'tileset_player.json';
 
 @Component({
   selector: 'app-game',
@@ -21,10 +21,10 @@ export class Game {
 
   async ngOnInit() {
     const canvas = document.querySelector('#game') as HTMLCanvasElement;
-    this.player = new Player('Cavi', 100, 100, 50, 50, 32, 32, PLAYER_TILESET);
+    this.player = new Player('Cavi', 100, 100, 50, 50, 16, 16, PLAYER_TILESET);
     await this.loadMap();
-    this.map.addPlayer(this.player);
     this.render = new Render(canvas, this.map);
+    await this.render.addEntity(this.player);
     await this.render.loadTilesets();
     this.render.draw();
   }
