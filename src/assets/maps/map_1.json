@@ -48,7 +48,7 @@
           "y": 100,
           "width": 32,
           "height": 32,
-          "name": "Tree"
+          "name": "Rock"
         },
         {
           "gid": 804,
@@ -56,7 +56,7 @@
           "y": 128,
           "width": 16,
           "height": 16,
-          "name": "Tree"
+          "name": "MiniRock"
         }
       ]
     }

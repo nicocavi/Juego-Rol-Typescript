@@ -145,7 +145,7 @@ export class Render {
   }
 
   drawObjects(): void {
-    const objects = [...this.map.terrainObjects, ...this.entities].sort((a, b) => a.y - b.y);
+    const objects = [...this.map.terrainObjects, ...this.entities].sort((a, b) => (a.y + a.height) - (b.y + b.height));
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
       console.log({ gid, x, y, width, height, sx, sy });

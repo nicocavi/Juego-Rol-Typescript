@@ -5,7 +5,7 @@ import { MapJSON } from './model/types';
 import { Map } from './model/map';
 
 const PLAYER_TILESET = 'tileset_player.json';
-
+const keys = new Set<string>();
 @Component({
   selector: 'app-game',
   imports: [],
@@ -26,6 +26,22 @@ export class Game {
     this.render = new Render(canvas, this.map);
     await this.render.addEntity(this.player);
     await this.render.loadTilesets();
+
+
+
+    window.addEventListener("keydown", e => keys.add(e.key));
+    window.addEventListener("keyup", e => keys.delete(e.key));
+
+
+
+    this.render.draw();
+
+    setInterval(() => this.loop(), (1000 / 30));
+
+  }
+
+  loop() {
+    this.player.update(keys);
     this.render.draw();
   }
 
