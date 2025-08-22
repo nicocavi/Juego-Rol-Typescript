@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { Render } from './model/render';
-import { Player } from './model/player';
-import { MapJSON } from './model/types';
-import { Map } from './model/map';
+import { Entities } from './model/entities';
 import { Input } from './model/input';
+import { Map } from './model/map';
+import { PhysicsManager } from './model/physicsManager';
+import { Player } from './model/player';
+import { Render } from './model/render';
+import { MapJSON } from './model/types';
 
 const PLAYER_TILESET = 'tileset_player.json';
 @Component({
@@ -17,8 +19,10 @@ export class Game {
   private render!:Render;
   private player!:Player;
   private map: Map = new Map();
+  private physicsManager = new PhysicsManager();
   private lvl = 1;
   private last = performance.now();
+  private entities: Entities = {terrain: [], objects: []};
 
   async ngOnInit() {
     const canvas = document.querySelector('#game') as HTMLCanvasElement;
@@ -33,12 +37,13 @@ export class Game {
       },
       input,
       'Cavi', 100, 100, 50, 50, 16, 16, PLAYER_TILESET);
-    await this.loadMap();
-    this.render = new Render(canvas, this.map);
+    this.entities = await this.loadMap();
+    this.render = new Render(canvas);
+    this.entities.objects.push(this.player);
     await this.render.addEntity(this.player);
-    await this.render.loadTilesets();
+    await this.render.loadTilesets(this.map.tilesets);
 
-    this.render.draw();
+    this.render.draw(this.entities);
 
     setInterval(() => this.loop() , 1000 / 30); // 30 FPS
   }
@@ -48,12 +53,12 @@ export class Game {
     const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
     this.last = t;
     this.player.update(dt);
-    this.render.draw();
+    this.render.draw(this.entities);
   }
 
-  async loadMap(): Promise<void> {
+  async loadMap(): Promise<Entities> {
     const mapData = await this.loadJSON<MapJSON>("/assets/maps/map_"+this.lvl+".json");
-    await this.map.load(mapData);
+    return await this.map.load(mapData);
   }
 
   private async loadJSON<T>(path: string): Promise<T> {

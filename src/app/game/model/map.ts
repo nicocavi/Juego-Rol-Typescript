@@ -7,11 +7,9 @@ const PATH_IMG = 'assets/img/';
 const PATH_TILESETS = 'assets/tilesets/';
 
 export class Map {
-  private terrain: TerrainObject[] = [];
-  private objects: GameObject[] = [];
   tilesets: TileSet[] = [];
 
-  async load(mapData: MapJSON) {
+  async load(mapData: MapJSON): Promise<{terrain: TerrainObject[], objects: GameObject[]}> {
     this.tilesets = await Promise.all(
       mapData.tilesets.map(async (t) => {
         const tileset = await loadJSON<TileSet>(`${PATH_TILESETS}${t.source}`);
@@ -21,7 +19,10 @@ export class Map {
         };
       })
     );
-    await this.processMap(mapData);
+    const terrain = await this.loadTerrain(mapData);
+    const objects = await this.loadObjects(mapData);
+
+    return {terrain, objects};
   }
 
   private findTileset(gid: number): TileSet {
@@ -35,7 +36,8 @@ export class Map {
     return tileset;
   }
 
-  private async loadTerrain(mapData: MapJSON): Promise<void> {
+  private async loadTerrain(mapData: MapJSON): Promise<TerrainObject[]> {
+    const terrain: TerrainObject[] = [];
     const layer = mapData.layers.find(
       (l) => l.name === 'Ground' && l.type === 'tilelayer'
     );
@@ -48,7 +50,7 @@ export class Map {
           const tileX = (id % cols) * tileset.tilewidth;
           const tileY = Math.floor(id / cols) * tileset.tileheight;
 
-          this.terrain.push({
+          terrain.push({
             gid: id,
             x: col,
             y: row,
@@ -62,16 +64,18 @@ export class Map {
         }
       }
     }
+    return terrain;
   }
 
-  private async loadObjects(mapData: MapJSON): Promise<void> {
+  private async loadObjects(mapData: MapJSON): Promise<GameObject[]> {
+    const objects: GameObject[] = [];
     const layer = mapData.layers.find(
       (l) => l.name === 'Objects' && l.type === 'objectgroup'
     );
     if (layer && layer.objects) {
       layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
       const tileset = this.findTileset(gid);
-      this.objects.push(
+      objects.push(
         new GameObject(
             gid,
             x,
@@ -87,18 +91,6 @@ export class Map {
         );
       });
     }
-  }
-
-  private async processMap(mapData: MapJSON): Promise<void> {
-    await this.loadTerrain(mapData);
-    await this.loadObjects(mapData);
-  }
-
-  get terrainObjects(): GameObject[] {
-    return this.objects;
-  }
-
-  get terrainElement(): TerrainObject[] {
-    return this.terrain;
+    return objects;
   }
 }

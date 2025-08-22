@@ -1,7 +1,8 @@
+import { Entities } from './entities';
 import { GameObject } from './gameObject';
 import { loadJSON } from './loadJSON';
-import { Map } from './map';
-import { MapJSON, TileSet } from './types';
+import { TerrainObject } from './terrainObject';
+import { TileSet } from './types';
 
 const PATH_IMG = 'assets/img/';
 const PATH_TILESETS = 'assets/tilesets/';
@@ -17,33 +18,31 @@ interface TileData {
 export class Render {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  entities: GameObject[] = [];
   tilesets: TileData[] = [];
-  map: Map;
 
-  constructor(canvas: HTMLCanvasElement, map: Map) {
-    this.map = map;
+  constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   }
 
-  async loadTilesets(): Promise<void> {
-    const tilesets = await Promise.all(
-      this.map.tilesets.map(
-        async ({ firstgid, image, columns, tileheight, tilewidth }) => {
-          const img = await this.loadImage(`${PATH_IMG}${image}`);
-          return {
-            id: firstgid,
-            tile: img,
-            colums: columns || 1,
-            tileWidth: tilewidth,
-            tileHeight: tileheight,
-          };
-        }
-      )
-    );
-
-    this.tilesets = [...tilesets, ...this.tilesets].sort((a, b) => a.id - b.id);
+  async loadTilesets(tilesets: TileSet[]): Promise<void> {
+    this.tilesets = [
+      ...(await Promise.all(
+        tilesets.map(
+          async ({ firstgid, image, columns, tileheight, tilewidth }) => {
+            const img = await this.loadImage(`${PATH_IMG}${image}`);
+            return {
+              id: firstgid,
+              tile: img,
+              colums: columns || 1,
+              tileWidth: tilewidth,
+              tileHeight: tileheight,
+            };
+          }
+        )
+      )),
+      ...this.tilesets,
+    ].sort((a, b) => a.id - b.id);
   }
 
   private loadImage(src: string): Promise<HTMLImageElement> {
@@ -60,19 +59,16 @@ export class Render {
       `${PATH_TILESETS}${object.tileset || 'default.json'}`
     );
 
-    const image = await this.loadImage(
-      `${PATH_IMG}${tileset.image}`
-    );
+    const image = await this.loadImage(`${PATH_IMG}${tileset.image}`);
 
     this.tilesets.push({
-        id: object.gid,
-        tile: image,
-        colums: tileset.columns || 1,
-        tileWidth: tileset.tilewidth,
-        tileHeight: tileset.tileheight,
-    })
+      id: object.gid,
+      tile: image,
+      colums: tileset.columns || 1,
+      tileWidth: tileset.tilewidth,
+      tileHeight: tileset.tileheight,
+    });
 
-    this.entities.push(object);
     this.tilesets = this.tilesets.sort((a, b) => a.id - b.id);
   }
 
@@ -115,7 +111,7 @@ export class Render {
     return tileset;
   }
 
-  drawTerrain(): void {
+  drawTerrain(entities:TerrainObject[]): void {
     for (const {
       gid,
       tileX,
@@ -126,7 +122,7 @@ export class Render {
       height,
       dHeight,
       dWidth,
-    } of this.map.terrainElement) {
+    } of entities) {
       const { tile } = this.findTileset(gid);
       this.drawImage(
         tile,
@@ -142,8 +138,10 @@ export class Render {
     }
   }
 
-  drawObjects(): void {
-    const objects = [...this.map.terrainObjects, ...this.entities].sort((a, b) => (a.y + a.height) - (b.y + b.height));
+  drawObjects(entities:GameObject[]): void {
+    const objects = entities.sort(
+      (a, b) => a.y + a.height - (b.y + b.height)
+    );
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
       const { tile } = this.findTileset(gid);
@@ -151,11 +149,10 @@ export class Render {
     }
   }
 
-  draw(): void {
+  draw(entities:Entities): void {
     this.clear();
     console.log('Drawing terrain');
-    this.drawTerrain();
-    this.drawObjects();
-    // setTimeout(() => this.draw(), 1000 / 60); // 60 FPS
+    this.drawTerrain(entities.terrain);
+    this.drawObjects(entities.objects);
   }
 }
