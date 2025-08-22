@@ -71,18 +71,20 @@ export class Map {
     if (layer && layer.objects) {
       layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
       const tileset = this.findTileset(gid);
-      console.log(tileset)
-      this.objects.push({
-          gid,
-          x,
-          y,
-          width,
-          height,
-          sx: ((gid - tileset.firstgid) % tileset.columns) * tileset.tilewidth,
-          sy: Math.floor((gid - tileset.firstgid) / tileset.columns) * tileset.tileheight,
-          dWidth: mapData.tilewidth,
-          dHeight: mapData.tileheight,
-        });
+      this.objects.push(
+        new GameObject(
+            gid,
+            x,
+            y,
+            width,
+            height,
+            ((gid - tileset.firstgid) % tileset.columns) * tileset.tilewidth,
+            Math.floor((gid - tileset.firstgid) / tileset.columns) * tileset.tileheight,
+            mapData.tilewidth,
+            mapData.tileheight,
+            true,
+          )
+        );
       });
     }
   }

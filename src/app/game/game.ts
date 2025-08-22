@@ -3,9 +3,9 @@ import { Render } from './model/render';
 import { Player } from './model/player';
 import { MapJSON } from './model/types';
 import { Map } from './model/map';
+import { Input } from './model/input';
 
 const PLAYER_TILESET = 'tileset_player.json';
-const keys = new Set<string>();
 @Component({
   selector: 'app-game',
   imports: [],
@@ -18,30 +18,36 @@ export class Game {
   private player!:Player;
   private map: Map = new Map();
   private lvl = 1;
+  private last = performance.now();
 
   async ngOnInit() {
     const canvas = document.querySelector('#game') as HTMLCanvasElement;
-    this.player = new Player('Cavi', 100, 100, 50, 50, 16, 16, PLAYER_TILESET);
+    const input = new Input();
+    this.player = new Player(
+      {
+        accel: 2400,         // sensibilidad
+        maxSpeed: 50,       // velocidad máx.
+        friction: 0.001,      // 0.02 muy “resbaloso”, 0.10 más frenado (topdown y fricción horiz. en platformer)
+        gravity: 2200,       // usado solo en platformer
+        jumpSpeed: 700       // usado solo en platformer
+      },
+      input,
+      'Cavi', 100, 100, 50, 50, 16, 16, PLAYER_TILESET);
     await this.loadMap();
     this.render = new Render(canvas, this.map);
     await this.render.addEntity(this.player);
     await this.render.loadTilesets();
 
-
-
-    window.addEventListener("keydown", e => keys.add(e.key));
-    window.addEventListener("keyup", e => keys.delete(e.key));
-
-
-
     this.render.draw();
 
-    setInterval(() => this.loop(), (1000 / 30));
-
+    setInterval(() => this.loop() , 1000 / 30); // 30 FPS
   }
 
   loop() {
-    this.player.update(keys);
+    const t = performance.now();
+    const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
+    this.last = t;
+    this.player.update(dt);
     this.render.draw();
   }
 

@@ -17,7 +17,6 @@ interface TileData {
 export class Render {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  objects: GameObject[] = [];
   entities: GameObject[] = [];
   tilesets: TileData[] = [];
   map: Map;
@@ -75,7 +74,6 @@ export class Render {
 
     this.entities.push(object);
     this.tilesets = this.tilesets.sort((a, b) => a.id - b.id);
-    console.log(this.tilesets)
   }
 
   private clear() {
@@ -148,7 +146,6 @@ export class Render {
     const objects = [...this.map.terrainObjects, ...this.entities].sort((a, b) => (a.y + a.height) - (b.y + b.height));
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
-      console.log({ gid, x, y, width, height, sx, sy });
       const { tile } = this.findTileset(gid);
       this.drawImage(tile, sx, sy, width, height, x, y, width, height);
     }
