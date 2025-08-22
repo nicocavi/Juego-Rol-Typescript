@@ -1,23 +1,14 @@
 import { Direction } from './direction';
-import { GameObject, GameObjectType } from './gameObject';
+import { Entity } from './entity';
+import { GameObjectType } from './gameObject';
 import { Input } from './input';
+import { MovementConfig } from './movementConfig';
 import { Vec2 } from './vec2';
 
-export class Player extends GameObject {
-  name: string;
+export class Player extends Entity {
   lvl: number;
   exp: number;
-  hp: number;
-  maxHp: number;
-  dx: number = 1;
-  dy: number = 0;
-  direction: 'up' | 'down' | 'left' | 'right' = 'down';
-  isMoving = false;
-  private cfg: MovementConfig;
-  private input: Input;
-  vel = new Vec2(0, 0);
-  dir: Direction = Direction.Down;
-  frame = 0;
+  input: Input;
 
   constructor(
     cfg: MovementConfig,
@@ -31,8 +22,7 @@ export class Player extends GameObject {
     height: number,
     tileset: string
   ) {
-    super(101, x, y, width, height, 0, 0, 16, 16, false, GameObjectType.PLAYER, tileset, true);
-    this.cfg = cfg;
+    super(101, x, y, width, height, 0, 0, 16, 16, GameObjectType.PLAYER, cfg, name, hp, maxHp, tileset);
     this.input = input;
     this.name = name;
     this.lvl = 1;

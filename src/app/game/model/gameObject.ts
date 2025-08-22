@@ -17,13 +17,10 @@ export class GameObject {
     type: GameObjectType;
     sx: number;
     sy: number;
-    vx: number = 0;
-    vy: number = 0; 
     dWidth: number;
     dHeight: number;
-    isStatic: boolean;
     tileset?: string;
-    collidable?: boolean;
+    collidable: boolean;
 
     constructor(
         gid: number,
@@ -35,10 +32,9 @@ export class GameObject {
         sy: number = 0,
         dWidth: number = 16,
         dHeight: number = 16,
-        isStatic: boolean = false,
         type = GameObjectType.OBSTACLE,
+        collidable: boolean = false,
         tileset?: string,
-        collidable?: boolean
     ) {
         this.id = uuidv4();
         this.gid = gid;
@@ -50,7 +46,6 @@ export class GameObject {
         this.sy = sy;
         this.dWidth = dWidth;
         this.dHeight = dHeight;
-        this.isStatic = isStatic;
         this.tileset = tileset;
         this.collidable = collidable;
         this.type = type;

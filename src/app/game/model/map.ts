@@ -1,4 +1,4 @@
-import { GameObject } from './gameObject';
+import { GameObject, GameObjectType } from './gameObject';
 import { loadJSON } from './loadJSON';
 import { TerrainObject } from './terrainObject';
 import { MapJSON, TileSet } from './types';
@@ -73,7 +73,7 @@ export class Map {
       (l) => l.name === 'Objects' && l.type === 'objectgroup'
     );
     if (layer && layer.objects) {
-      layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
+      layer.objects.forEach(({ gid, x, y, width, height, collidable }: GameObject) => {
       const tileset = this.findTileset(gid);
       objects.push(
         new GameObject(
@@ -86,7 +86,8 @@ export class Map {
             Math.floor((gid - tileset.firstgid) / tileset.columns) * tileset.tileheight,
             mapData.tilewidth,
             mapData.tileheight,
-            true,
+            GameObjectType.OBSTACLE,
+            true
           )
         );
       });

@@ -2,6 +2,12 @@
 
 import { GameObject } from "./gameObject";
 
+const collisionMatrix: Record<string, string[]> = {
+  player: ["npc", "obstacle"],
+  npc: ["player", "bullet"],
+  bullet: ["npc", "player"],
+};
+
 export class PhysicsManager {
   update(entities: GameObject[]) {
     for (let i = 0; i < entities.length; i++) {
@@ -9,8 +15,8 @@ export class PhysicsManager {
         const a = entities[i];
         const b = entities[j];
 
-        if (this.overlap(a, b)) {
-          this.resolve(a, b);
+        if (collisionMatrix[a.type]?.includes(b.type)) {
+          if (this.overlap(a, b)) this.resolve(a, b);
         }
       }
     }

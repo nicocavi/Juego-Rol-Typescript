@@ -6,6 +6,7 @@ import { PhysicsManager } from './model/physicsManager';
 import { Player } from './model/player';
 import { Render } from './model/render';
 import { MapJSON } from './model/types';
+import { Entity } from './model/entity';
 
 const PLAYER_TILESET = 'tileset_player.json';
 @Component({
@@ -22,9 +23,23 @@ export class Game {
   private physicsManager = new PhysicsManager();
   private lvl = 1;
   private last = performance.now();
-  private entities: Entities = {terrain: [], objects: []};
+  private elements: Entities = {terrain: [], objects: [], entities: []};
 
   async ngOnInit() {
+    await this.load();
+    setInterval(() => this.loop() , 1000 / 30); // 30 FPS
+  }
+
+  loop() {
+    const t = performance.now();
+    const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
+    this.last = t;
+    this.player.update(dt);
+    this.physicsManager.update(this.elements.objects);
+    this.render.draw(this.elements);
+  }
+
+  async load(): Promise<void> {
     const canvas = document.querySelector('#game') as HTMLCanvasElement;
     const input = new Input();
     this.player = new Player(
@@ -37,26 +52,15 @@ export class Game {
       },
       input,
       'Cavi', 100, 100, 50, 50, 16, 16, PLAYER_TILESET);
-    this.entities = await this.loadMap();
+    const terrain = await this.loadMap();
+    this.elements = {...this.elements, ...terrain}
     this.render = new Render(canvas);
-    this.entities.objects.push(this.player);
+    this.elements.entities.push(this.player);
     await this.render.addEntity(this.player);
     await this.render.loadTilesets(this.map.tilesets);
-
-    this.render.draw(this.entities);
-
-    setInterval(() => this.loop() , 1000 / 30); // 30 FPS
   }
 
-  loop() {
-    const t = performance.now();
-    const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
-    this.last = t;
-    this.player.update(dt);
-    this.render.draw(this.entities);
-  }
-
-  async loadMap(): Promise<Entities> {
+  async loadMap(): Promise<Partial<Entities>> {
     const mapData = await this.loadJSON<MapJSON>("/assets/maps/map_"+this.lvl+".json");
     return await this.map.load(mapData);
   }

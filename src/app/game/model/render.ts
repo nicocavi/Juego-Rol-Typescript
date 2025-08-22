@@ -149,10 +149,10 @@ export class Render {
     }
   }
 
-  draw(entities:Entities): void {
+  draw(elements:Entities): void {
     this.clear();
     console.log('Drawing terrain');
-    this.drawTerrain(entities.terrain);
-    this.drawObjects(entities.objects);
+    this.drawTerrain(elements.terrain);
+    this.drawObjects([...elements.objects, ...elements.entities]);
   }
 }
