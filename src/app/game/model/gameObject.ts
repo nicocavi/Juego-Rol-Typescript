@@ -1,4 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
+
+export enum GameObjectType {
+    PLAYER = "player",
+    NPC = "npc",
+    BULLET = "bullet",
+    OBSTACLE = "obstacle"
+}
+
 export class GameObject {
     id: string;
     gid: number;
@@ -6,6 +14,7 @@ export class GameObject {
     y: number;
     width: number;
     height: number;
+    type: GameObjectType;
     sx: number;
     sy: number;
     vx: number = 0;
@@ -27,6 +36,7 @@ export class GameObject {
         dWidth: number = 16,
         dHeight: number = 16,
         isStatic: boolean = false,
+        type = GameObjectType.OBSTACLE,
         tileset?: string,
         collidable?: boolean
     ) {
@@ -43,5 +53,6 @@ export class GameObject {
         this.isStatic = isStatic;
         this.tileset = tileset;
         this.collidable = collidable;
+        this.type = type;
     }
 }

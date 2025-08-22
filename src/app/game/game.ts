@@ -25,8 +25,8 @@ export class Game {
     const input = new Input();
     this.player = new Player(
       {
-        accel: 2400,         // sensibilidad
-        maxSpeed: 50,       // velocidad máx.
+        accel: 3400,         // sensibilidad
+        maxSpeed: 60,       // velocidad máx.
         friction: 0.001,      // 0.02 muy “resbaloso”, 0.10 más frenado (topdown y fricción horiz. en platformer)
         gravity: 2200,       // usado solo en platformer
         jumpSpeed: 700       // usado solo en platformer

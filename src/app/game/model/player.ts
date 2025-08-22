@@ -1,5 +1,5 @@
 import { Direction } from './direction';
-import { GameObject } from './gameObject';
+import { GameObject, GameObjectType } from './gameObject';
 import { Input } from './input';
 import { Vec2 } from './vec2';
 
@@ -31,7 +31,7 @@ export class Player extends GameObject {
     height: number,
     tileset: string
   ) {
-    super(101, x, y, width, height, 0, 0, 16, 16, false, tileset, true);
+    super(101, x, y, width, height, 0, 0, 16, 16, false, GameObjectType.PLAYER, tileset, true);
     this.cfg = cfg;
     this.input = input;
     this.name = name;
@@ -97,9 +97,5 @@ export class Player extends GameObject {
       this.sy = 0;
       this.frame = 0;
     }
-    console.log('Player update:', {
-        sx: this.sx,
-        sy: this.sy,
-    });
   }
 }
