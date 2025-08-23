@@ -83,11 +83,11 @@
           "name": "Rock",
           "collider": {
             "origin": {
-              "x": 8,
-              "y": 16
+              "x": 5,
+              "y": 24
             },
-            "width": 16,
-            "height": 16
+            "width": 23,
+            "height": 8
           }
         },
         {
@@ -99,10 +99,10 @@
           "name": "MiniRock",
           "collider": {
             "origin": {
-              "x": 0,
+              "x": 2,
               "y": 8
             },
-            "width": 16,
+            "width": 12,
             "height": 8
           }
         }

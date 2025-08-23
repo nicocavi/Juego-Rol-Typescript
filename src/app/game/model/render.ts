@@ -19,10 +19,12 @@ export class Render {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   tilesets: TileData[] = [];
+  scale = 3;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.ctx.imageSmoothingEnabled = false;
   }
 
   async loadTilesets(tilesets: TileSet[]): Promise<void> {
@@ -93,10 +95,10 @@ export class Render {
       tileY,
       tileWidth,
       tileHeight,
-      x,
-      y,
-      width,
-      height
+      x * this.scale,
+      y * this.scale,
+      width * this.scale,
+      height * this.scale,
     );
   }
 
@@ -130,10 +132,10 @@ export class Render {
         tileY,
         width,
         height,
-        x * dWidth,
-        y * dHeight,
-        dWidth,
-        dHeight
+        x * dWidth * this.scale,
+        y * dHeight * this.scale,
+        dWidth * this.scale,
+        dHeight * this.scale
       );
     }
   }
