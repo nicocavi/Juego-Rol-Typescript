@@ -24,7 +24,29 @@ export class PhysicsManager {
     return collisions;
   }
 
-  private overlap(a: GameObject, b: GameObject): boolean {
+  private getCollider(obj: GameObject): {x: number, y: number, width: number, height: number} {
+    if(obj.collider){
+      return {
+        x: obj.collider.origin.x + obj.x,
+        y: obj.collider.origin.y + obj.y,
+        width: obj.collider.width,
+        height: obj.collider.height
+      };
+    }else {
+      return {
+        x: obj.x,
+        y: obj.y,
+        width: obj.width,
+        height: obj.height
+      };
+    }
+  }
+
+  private overlap(obj1: GameObject, obj2: GameObject): boolean {
+
+    const a = this.getCollider(obj1);
+    const b = this.getCollider(obj2);
+    
     return !!(
       (a.x < b.x + b.width &&
       a.x + a.width > b.x) &&

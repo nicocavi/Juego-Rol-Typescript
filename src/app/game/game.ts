@@ -94,6 +94,7 @@ export class Game {
         // 4. Resolver colisión: simple rollback
         e.x = oldX;
         e.y = oldY;
+        e.vel.set(0, 0); // detener movimiento
 
         // Si quieres algo más fino: resolver por eje
         // entity.x = oldX; // solo si la colisión vino de X

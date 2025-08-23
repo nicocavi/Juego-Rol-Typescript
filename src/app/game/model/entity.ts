@@ -1,3 +1,4 @@
+import { Collider } from './collider';
 import { Direction } from './direction';
 import { GameObject, GameObjectType } from './gameObject';
 import { MovementConfig } from './movementConfig';
@@ -12,8 +13,8 @@ export class Entity extends GameObject {
   frame = 0;
   hp: number;
   maxHp: number;
-  direction: Direction;
   name: string;
+  direction: Direction = Direction.Down;
 
   constructor(
     gid: number,
@@ -31,14 +32,13 @@ export class Entity extends GameObject {
     hp: number,
     maxHp: number,
     tileset: string,
-    direction: Direction = Direction.Down
+    collider?: Collider
   ) {
-    super(gid, x, y, width, height, sx, sy, dWidth, dHeight, type, true, tileset);
+    super(gid, x, y, width, height, sx, sy, dWidth, dHeight, type, collider, tileset);
     this.cfg = cfg;
     this.name = name;
     this.hp = hp;
     this.maxHp = maxHp;
-    this.direction = direction;
   }
 
   update(dt:number): void {}

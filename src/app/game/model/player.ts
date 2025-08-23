@@ -1,9 +1,16 @@
+import { Collider } from './collider';
 import { Direction } from './direction';
 import { Entity } from './entity';
 import { GameObjectType } from './gameObject';
 import { Input } from './input';
 import { MovementConfig } from './movementConfig';
 import { Vec2 } from './vec2';
+
+const collider = {
+  origin: { x: 0, y: 12 },
+  width: 16,
+  height: 4,
+}
 
 export class Player extends Entity {
   lvl: number;
@@ -22,7 +29,7 @@ export class Player extends Entity {
     height: number,
     tileset: string
   ) {
-    super(101, x, y, width, height, 0, 0, 16, 16, GameObjectType.PLAYER, cfg, name, hp, maxHp, tileset);
+    super(101, x, y, width, height, 0, 0, 16, 16, GameObjectType.PLAYER, cfg, name, hp, maxHp, tileset, collider);
     this.input = input;
     this.name = name;
     this.lvl = 1;

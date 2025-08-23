@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Collider } from './collider';
 
 export enum GameObjectType {
     PLAYER = "player",
@@ -20,7 +21,7 @@ export class GameObject {
     dWidth: number;
     dHeight: number;
     tileset?: string;
-    collidable: boolean;
+    collider?: Collider;
 
     constructor(
         gid: number,
@@ -33,7 +34,7 @@ export class GameObject {
         dWidth: number = 16,
         dHeight: number = 16,
         type = GameObjectType.OBSTACLE,
-        collidable: boolean = false,
+        collider?: Collider,
         tileset?: string,
     ) {
         this.id = uuidv4();
@@ -47,7 +48,7 @@ export class GameObject {
         this.dWidth = dWidth;
         this.dHeight = dHeight;
         this.tileset = tileset;
-        this.collidable = collidable;
+        this.collider = collider;
         this.type = type;
     }
 }

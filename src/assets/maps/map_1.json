@@ -32,7 +32,15 @@
           "y": 32,
           "width": 32,
           "height": 32,
-          "name": "Tree"
+          "name": "Tree",
+          "collider": {
+            "origin": {
+              "x": 8,
+              "y": 24
+            },
+            "width": 8,
+            "height": 8
+          }
         },
         {
           "gid": 771,
@@ -40,15 +48,31 @@
           "y": 26,
           "width": 32,
           "height": 32,
-          "name": "Tree"
+          "name": "Tree",
+          "collider": {
+            "origin": {
+              "x": 8,
+              "y": 24
+            },
+            "width": 8,
+            "height": 8
+          }
         },
         {
           "gid": 771,
-          "x": 120,
-          "y": 26,
+          "x": 50,
+          "y": 100,
           "width": 32,
           "height": 32,
-          "name": "Tree"
+          "name": "Tree",
+          "collider": {
+            "origin": {
+              "x": 8,
+              "y": 28
+            },
+            "width": 12,
+            "height": 4
+          }
         },
         {
           "gid": 778,
@@ -56,7 +80,15 @@
           "y": 100,
           "width": 32,
           "height": 32,
-          "name": "Rock"
+          "name": "Rock",
+          "collider": {
+            "origin": {
+              "x": 8,
+              "y": 16
+            },
+            "width": 16,
+            "height": 16
+          }
         },
         {
           "gid": 804,
@@ -64,7 +96,15 @@
           "y": 128,
           "width": 16,
           "height": 16,
-          "name": "MiniRock"
+          "name": "MiniRock",
+          "collider": {
+            "origin": {
+              "x": 0,
+              "y": 8
+            },
+            "width": 16,
+            "height": 8
+          }
         }
       ]
     }

@@ -73,7 +73,7 @@ export class Map {
       (l) => l.name === 'Objects' && l.type === 'objectgroup'
     );
     if (layer && layer.objects) {
-      layer.objects.forEach(({ gid, x, y, width, height, collidable }: GameObject) => {
+      layer.objects.forEach(({ gid, x, y, width, height, collider }: GameObject) => {
       const tileset = this.findTileset(gid);
       objects.push(
         new GameObject(
@@ -87,7 +87,7 @@ export class Map {
             mapData.tilewidth,
             mapData.tileheight,
             GameObjectType.OBSTACLE,
-            true
+            collider
           )
         );
       });
