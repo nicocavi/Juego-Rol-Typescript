@@ -31,7 +31,7 @@ export class Player extends Entity {
     this.maxHp = maxHp;
   }
 
-  update(dt: number) {
+  override update(dt: number) {
     this.updateMovementParameters(dt);
     // Integración de posición
     const pos = new Vec2(this.x, this.y);

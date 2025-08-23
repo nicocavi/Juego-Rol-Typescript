@@ -40,4 +40,6 @@ export class Entity extends GameObject {
     this.maxHp = maxHp;
     this.direction = direction;
   }
+
+  update(dt:number): void {}
 }

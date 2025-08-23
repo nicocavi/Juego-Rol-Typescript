@@ -1,5 +1,6 @@
 // collisionManager.ts
 
+import { Entity } from "./entity";
 import { GameObject } from "./gameObject";
 
 const collisionMatrix: Record<string, string[]> = {
@@ -9,25 +10,26 @@ const collisionMatrix: Record<string, string[]> = {
 };
 
 export class PhysicsManager {
-  update(entities: GameObject[]) {
-    for (let i = 0; i < entities.length; i++) {
-      for (let j = i + 1; j < entities.length; j++) {
-        const a = entities[i];
-        const b = entities[j];
 
-        if (collisionMatrix[a.type]?.includes(b.type)) {
-          if (this.overlap(a, b)) this.resolve(a, b);
-        }
+  checkCollisions(movingObject: GameObject, objects: GameObject[]): GameObject[] {
+    const collisions: GameObject[] = [];
+
+    for (const obj of objects) {
+      if (obj === movingObject) continue; // no colisiona consigo mismo
+      if (this.overlap(movingObject, obj)) {
+        collisions.push(obj);
       }
     }
+
+    return collisions;
   }
 
   private overlap(a: GameObject, b: GameObject): boolean {
-    return (
-      a.x < b.x + b.width &&
-      a.x + a.width > b.x &&
-      a.y < b.y + b.height &&
-      a.y + a.height > b.y
+    return !!(
+      (a.x < b.x + b.width &&
+      a.x + a.width > b.x) &&
+      (a.y < b.y + b.height &&
+      a.y + a.height > b.y)
     );
   }
 
