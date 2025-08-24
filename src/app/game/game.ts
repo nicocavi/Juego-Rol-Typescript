@@ -34,7 +34,7 @@ export class Game {
     const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
     this.last = t;
     this.updateAllEntities(dt);
-    this.render.draw(this.elements);
+    this.render.draw(this.elements, this.player, dt);
   }
 
   async load(): Promise<void> {
@@ -43,7 +43,7 @@ export class Game {
     this.player = new Player(
       {
         accel: 3400, // sensibilidad
-        maxSpeed: 60, // velocidad máx.
+        maxSpeed: 100, // velocidad máx.
         friction: 0.001, // 0.02 muy “resbaloso”, 0.10 más frenado (topdown y fricción horiz. en platformer)
         gravity: 2200, // usado solo en platformer
         jumpSpeed: 700, // usado solo en platformer

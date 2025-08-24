@@ -52,8 +52,8 @@ export class Map {
 
           terrain.push({
             gid: id,
-            x: col,
-            y: row,
+            x: col * mapData.tilewidth,
+            y: row * mapData.tileheight,
             width: tileset.tilewidth,
             height: tileset.tileheight,
             dWidth: mapData.tilewidth,

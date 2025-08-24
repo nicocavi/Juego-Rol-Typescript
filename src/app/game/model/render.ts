@@ -3,6 +3,8 @@ import { GameObject } from './gameObject';
 import { loadJSON } from './loadJSON';
 import { TerrainObject } from './terrainObject';
 import { TileSet } from './types';
+import { Camera } from './camera';
+import { Player } from './player';
 
 const PATH_IMG = 'assets/img/';
 const PATH_TILESETS = 'assets/tilesets/';
@@ -20,11 +22,13 @@ export class Render {
   ctx: CanvasRenderingContext2D;
   tilesets: TileData[] = [];
   scale = 3;
+  camera: Camera;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.ctx.imageSmoothingEnabled = false;
+    this.camera = new Camera(canvas.width, canvas.height);
   }
 
   async loadTilesets(tilesets: TileSet[]): Promise<void> {
@@ -126,14 +130,16 @@ export class Render {
       dWidth,
     } of entities) {
       const { tile } = this.findTileset(gid);
+      const screen = this.camera.worldToScreen(x , y);
+      // if(x === 0 && y === 0)console.log('Terrain: ', {screen, terrain: {x, y, width, height, dWidth, dHeight}});
       this.drawImage(
         tile,
         tileX,
         tileY,
         width,
         height,
-        x * dWidth * this.scale,
-        y * dHeight * this.scale,
+        (x * this.scale) - this.camera.x,
+        (y * this.scale)  - this.camera.y,
         dWidth * this.scale,
         dHeight * this.scale
       );
@@ -147,13 +153,14 @@ export class Render {
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
       const { tile } = this.findTileset(gid);
-      this.drawImage(tile, sx, sy, width, height, x, y, width, height);
+      const screen = this.camera.worldToScreen(x, y);
+      this.drawImage(tile, sx, sy, width, height, screen.x, screen.y, width, height);
     }
   }
 
-  draw(elements:Entities): void {
+  draw(elements:Entities, player: Player, dt: number): void {
     this.clear();
-    console.log('Drawing terrain');
+    this.camera.follow(player);
     this.drawTerrain(elements.terrain);
     this.drawObjects([...elements.objects, ...elements.entities]);
   }
