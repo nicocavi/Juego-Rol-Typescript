@@ -160,7 +160,7 @@ export class Render {
 
   draw(elements:Entities, player: Player, dt: number): void {
     this.clear();
-    this.camera.follow(player);
+    this.camera.follow(player, dt);
     this.drawTerrain(elements.terrain);
     this.drawObjects([...elements.objects, ...elements.entities]);
   }
