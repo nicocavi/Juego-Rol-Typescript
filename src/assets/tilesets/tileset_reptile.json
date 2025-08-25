@@ -1,0 +1,14 @@
+{
+  "columns": 4,
+  "image": "npc/Reptile.png",
+  "imageheight": 112,
+  "imagewidth": 64,
+  "margin": 0,
+  "name": "ReptileTiles",
+  "spacing": 0,
+  "tilecount": 2,
+  "tileheight": 16,
+  "tilewidth": 16,
+  "type": "tileset",
+  "version": "1.9"
+}

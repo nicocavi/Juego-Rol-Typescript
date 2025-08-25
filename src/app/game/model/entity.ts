@@ -42,4 +42,5 @@ export class Entity extends GameObject {
   }
 
   update(dt:number): void {}
+
 }

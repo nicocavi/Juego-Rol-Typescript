@@ -95,4 +95,14 @@ export class Player extends Entity {
       this.frame = 0;
     }
   }
+
+  takeDamage(damage: number): void {
+    this.hp -= damage;
+    if (this.hp < 0) {
+      this.hp = 0;
+      console.log(`${this.name} ha sido derrotado!`);
+    } else {
+      console.log(`${this.name} recibió ${damage} puntos de daño. HP restante: ${this.hp}`);
+    }
+  }
 }

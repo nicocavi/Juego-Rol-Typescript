@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { reptile } from './mock/reptile';
 import { Entities } from './model/entities';
 import { Input } from './model/input';
 import { Map } from './model/map';
@@ -6,7 +7,6 @@ import { PhysicsManager } from './model/physicsManager';
 import { Player } from './model/player';
 import { Render } from './model/render';
 import { MapJSON } from './model/types';
-import { Entity } from './model/entity';
 
 const PLAYER_TILESET = 'tileset_player.json';
 @Component({
@@ -62,7 +62,12 @@ export class Game {
     this.elements = { ...this.elements, ...terrain };
     this.render = new Render(canvas);
     this.elements.entities.push(this.player);
+    this.elements.entities.push(reptile);
+
+    reptile.setTarget(this.player);
+
     await this.render.addEntity(this.player);
+    await this.render.addEntity(reptile);
     await this.render.loadTilesets(this.map.tilesets);
   }
 
