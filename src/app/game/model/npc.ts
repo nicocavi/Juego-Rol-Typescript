@@ -2,15 +2,20 @@ import { Collider } from './collider';
 import { Direction } from './direction';
 import { Entity } from './entity';
 import { GameObjectType } from './gameObject';
+import { Grid } from './grid';
 import { MovementConfig } from './movementConfig';
+import { PathFinder } from './pathFinder';
 import { Player } from './player';
 import { Vec2 } from './vec2';
 
+const EPSILON = 1; // tolerancia en píxeles
+const NPC_SPEED = 2; // velocidad de movimiento
 export class NPC extends Entity {
   attackRange: number;
   attackCooldown: number;
-  private attackTimer: number;
-  private target: Player | null = null;
+  private target: Entity | null = null;
+  private path: { x: number; y: number }[] = [];
+  private pathFinder = new PathFinder();
 
   constructor(
     gid: number,
@@ -30,7 +35,7 @@ export class NPC extends Entity {
     tileset: string,
     attackRange: number = 40,
     attackCooldown: number = 1.5,
-    collider?: Collider
+    collider?: Collider,
   ) {
     super(
       gid,
@@ -56,46 +61,41 @@ export class NPC extends Entity {
     this.maxHp = maxHp;
     this.attackRange = attackRange;
     this.attackCooldown = attackCooldown; // segundos
-    this.attackTimer = 0;
   }
 
   override update(dt: number) {
-    if (this.target) {
-      const dir = new Vec2(this.target.x - this.x, this.target.y - this.y);
-      const dist = dir.length();
+    if(this.path.length > 0){ 
+      console.log('NPC siguiendo path: ', this.path);
 
-      if (dist > this.attackRange) {
-        // mover en dirección al player
-        dir.normalize();
-        this.vel = new Vec2(dir.x * this.cfg.maxSpeed, dir.y * this.cfg.maxSpeed);
-
-        // usar magnitud de this.vel como "velocidad base"
-        const move = dir.clone().scale(this.vel.length() * dt);
-
-        this.x += move.x;
-        this.y += move.y;
-        this.updateDirection(dir);
-        this.updateAnimation(dt);
-      } else {
-        // dentro del rango => atacar
-        this.sy = 0;
-        this.frame = 0;
-        this.attackTimer -= dt;
-        if (this.attackTimer <= 0) {
-          this.attack(this.target);
-          this.attackTimer = this.attackCooldown;
+      const nextNode = this.path[this.path.length - 1]; // siguiente nodo en el path
+      const targetPos = new Vec2(nextNode.x * 16 + 8, nextNode.y * 16 + 8); // centro del tile
+      
+      const toTarget = targetPos.subtract(new Vec2(this.x + this.width / 2, this.y + this.height / 2));
+      const distance = toTarget.length();
+      if (distance < EPSILON) {
+        // llegó al nodo, quitarlo del path
+        this.path.pop();
+        if (this.path.length === 0) {
+          this.vel = new Vec2(0, 0); // detenerse al llegar
         }
+      } else {
+        // mover hacia el nodo
+        const direction = toTarget.normalize();
+        this.vel = direction.scale(NPC_SPEED);
       }
+      // aplicar movimiento
+      this.x += this.vel.x;
+      this.y += this.vel.y;
+
+      this.updateAnimation(dt);
+      this.updateDirection(this.vel);
     }
+
   }
 
   attack(player: Player) {
     console.log('NPC atacó al player!');
     player.takeDamage(10); // asumimos que el player tiene un método de daño
-  }
-
-  setTarget(player: Player | null) {
-    this.target = player;
   }
 
   private updateAnimation(dt: number) {
@@ -110,12 +110,35 @@ export class NPC extends Entity {
   }
 
   private updateDirection(dir: Vec2) {
-      const axis = dir;
-      if (Math.abs(axis.x) > Math.abs(axis.y)) {
-        // horizontal domina
-        this.dir = axis.x > 0 ? Direction.Right : Direction.Left;
-      } else if (axis.y !== 0) {
-        this.dir = axis.y > 0 ? Direction.Down : Direction.Up;
-      }
+    const axis = dir;
+    if (Math.abs(axis.x) > Math.abs(axis.y)) {
+      // horizontal domina
+      this.dir = axis.x > 0 ? Direction.Right : Direction.Left;
+    } else if (axis.y !== 0) {
+      this.dir = axis.y > 0 ? Direction.Down : Direction.Up;
     }
+  }
+
+  follow(target: Entity, grid: Grid) {
+    this.target = target;
+    this.path = this.pathFinder.find(this, target, grid);
+    console.log("Busqueda de path: ", this.path);
+    console.log("Busqueda de path: ", {target, grid});
+  }
+
+
+  get start(): {x: number, y: number} {
+    return {
+      x: Math.floor(this.x / 16),
+      y: Math.floor(this.y / 16),
+    };
+  }
+
+  get end(): {x: number, y: number} {
+    if (!this.target) return this.start;
+    return {
+      x: Math.floor(this.target.x / 16),
+      y: Math.floor(this.target.y / 16),
+    };
+  }
 }

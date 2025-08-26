@@ -7,6 +7,7 @@ import { PhysicsManager } from './model/physicsManager';
 import { Player } from './model/player';
 import { Render } from './model/render';
 import { MapJSON } from './model/types';
+import { Grid } from './model/grid';
 
 const PLAYER_TILESET = 'tileset_player.json';
 @Component({
@@ -23,6 +24,7 @@ export class Game {
   private lvl = 1;
   private last = performance.now();
   private elements: Entities = { terrain: [], objects: [], entities: [] };
+  private grid: Grid = new Grid(10, 10); // para pathfinding
 
   async ngOnInit() {
     await this.load();
@@ -33,6 +35,7 @@ export class Game {
     const t = performance.now();
     const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
     this.last = t;
+    reptile.follow(this.player, this.grid);
     this.updateAllEntities(dt);
     this.render.draw(this.elements, this.player, dt);
   }
@@ -64,7 +67,8 @@ export class Game {
     this.elements.entities.push(this.player);
     this.elements.entities.push(reptile);
 
-    reptile.setTarget(this.player);
+    // Inicializar grid para pathfinding
+    this.grid.initializeGrid(10, 10, this.elements.objects);
 
     await this.render.addEntity(this.player);
     await this.render.addEntity(reptile);
