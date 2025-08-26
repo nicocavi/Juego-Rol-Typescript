@@ -8,6 +8,7 @@ import { Player } from './model/player';
 import { Render } from './model/render';
 import { MapJSON } from './model/types';
 import { Grid } from './model/grid';
+import { NPC } from './model/npc';
 
 const PLAYER_TILESET = 'tileset_player.json';
 @Component({
@@ -29,15 +30,6 @@ export class Game {
   async ngOnInit() {
     await this.load();
     setInterval(() => this.loop(), 1000 / 30); // 30 FPS
-  }
-
-  loop() {
-    const t = performance.now();
-    const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
-    this.last = t;
-    reptile.follow(this.player, this.grid);
-    this.updateAllEntities(dt);
-    this.render.draw(this.elements, this.player, dt);
   }
 
   async load(): Promise<void> {
@@ -75,6 +67,14 @@ export class Game {
     await this.render.loadTilesets(this.map.tilesets);
   }
 
+  loop() {
+    const t = performance.now();
+    const dt = Math.min((t - this.last) / 1000, 0.033); // clamp dt por seguridad
+    this.last = t;
+    this.updateAllEntities(dt);
+    this.render.draw(this.elements, this.player, dt);
+  }
+
   async loadMap(): Promise<Partial<Entities>> {
     const mapData = await this.loadJSON<MapJSON>(
       '/assets/maps/map_' + this.lvl + '.json'
@@ -88,9 +88,12 @@ export class Game {
   }
 
   private updateAllEntities(delta: number): void {
-    for (const e of this.elements.entities) {
+    const entities = this.elements.entities.filter(e => this.render.camera.viewInCamera(e.x, e.y, e.width, e.height));
+    for (const e of entities) {
       const oldX = e.x;
       const oldY = e.y;
+
+      if( e.type === 'npc' ) (e as NPC).follow(this.player, this.grid);
 
       e.update(delta);
 

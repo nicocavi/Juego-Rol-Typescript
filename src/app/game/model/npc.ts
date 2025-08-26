@@ -65,7 +65,6 @@ export class NPC extends Entity {
 
   override update(dt: number) {
     if(this.path.length > 0){ 
-      console.log('NPC siguiendo path: ', this.path);
 
       const nextNode = this.path[this.path.length - 1]; // siguiente nodo en el path
       const targetPos = new Vec2(nextNode.x * 16 + 8, nextNode.y * 16 + 8); // centro del tile
@@ -94,7 +93,6 @@ export class NPC extends Entity {
   }
 
   attack(player: Player) {
-    console.log('NPC atacó al player!');
     player.takeDamage(10); // asumimos que el player tiene un método de daño
   }
 
@@ -122,8 +120,6 @@ export class NPC extends Entity {
   follow(target: Entity, grid: Grid) {
     this.target = target;
     this.path = this.pathFinder.find(this, target, grid);
-    console.log("Busqueda de path: ", this.path);
-    console.log("Busqueda de path: ", {target, grid});
   }
 
 

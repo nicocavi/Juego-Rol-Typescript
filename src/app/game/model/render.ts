@@ -28,7 +28,7 @@ export class Render {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.ctx.imageSmoothingEnabled = false;
-    this.camera = new Camera(canvas.width, canvas.height);
+    this.camera = new Camera(10, 10, 16);
   }
 
   async loadTilesets(tilesets: TileSet[]): Promise<void> {
@@ -102,7 +102,7 @@ export class Render {
       x * this.scale,
       y * this.scale,
       width * this.scale,
-      height * this.scale,
+      height * this.scale
     );
   }
 
@@ -117,7 +117,7 @@ export class Render {
     return tileset;
   }
 
-  drawTerrain(entities:TerrainObject[]): void {
+  drawTerrain(entities: TerrainObject[]): void {
     for (const {
       gid,
       tileX,
@@ -130,38 +130,62 @@ export class Render {
       dWidth,
     } of entities) {
       const { tile } = this.findTileset(gid);
-      const screen = this.camera.worldToScreen(x , y);
-      // if(x === 0 && y === 0)console.log('Terrain: ', {screen, terrain: {x, y, width, height, dWidth, dHeight}});
       this.drawImage(
         tile,
         tileX,
         tileY,
         width,
         height,
-        (x * this.scale) - this.camera.x,
-        (y * this.scale)  - this.camera.y,
-        dWidth * this.scale,
-        dHeight * this.scale
+        x - this.camera.x,
+        y - this.camera.y,
+        dWidth,
+        dHeight
       );
     }
   }
 
-  drawObjects(entities:GameObject[]): void {
-    const objects = entities.sort(
-      (a, b) => a.y + a.height - (b.y + b.height)
-    );
+  drawObjects(entities: GameObject[]): void {
+    const objects = entities.sort((a, b) => a.y + a.height - (b.y + b.height));
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
       const { tile } = this.findTileset(gid);
       const screen = this.camera.worldToScreen(x, y);
-      this.drawImage(tile, sx, sy, width, height, screen.x, screen.y, width, height);
+      this.drawImage(
+        tile,
+        sx,
+        sy,
+        width,
+        height,
+        screen.x,
+        screen.y,
+        width,
+        height
+      );
     }
   }
 
-  draw(elements:Entities, player: Player, dt: number): void {
+  draw(elements: Entities, player: Player, dt: number): void {
     this.clear();
     this.camera.follow(player, dt);
-    this.drawTerrain(elements.terrain);
-    this.drawObjects([...elements.objects, ...elements.entities]);
+    const terrain = elements.terrain.filter(({ x, y, height, width }) =>
+      this.camera.viewInCamera(x, y, width, height)
+    );
+    const objects = [...elements.objects, ...elements.entities].filter(
+      ({ x, y, height, width }) => this.camera.viewInCamera(x, y, width, height));
+    this.drawTerrain(terrain);
+    this.drawObjects(objects);
+    this.drawCells();
+  }
+
+  private drawCells(): void {
+    const { tileSize, viewportWidth, viewportHeight, x: camX, y: camY } = this.camera;
+    this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+    for (let col = 0; col <= viewportWidth; col++) {
+      for (let row = 0; row <= viewportHeight; row++) {
+        const x = col * tileSize;
+        const y = row * tileSize;
+        this.ctx.strokeRect(x * this.scale, y * this.scale, tileSize * this.scale, tileSize * this.scale);
+      }
+    }
   }
 }
