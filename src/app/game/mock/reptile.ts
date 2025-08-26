@@ -8,7 +8,7 @@ const collider = {
 }
 
 export const reptile = new NPC(
-    200, // gid
+    2000000, // gid
     100, // x
     150, // y
     16, // width

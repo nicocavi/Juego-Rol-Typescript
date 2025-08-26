@@ -65,6 +65,7 @@ export class Game {
     await this.render.addEntity(this.player);
     await this.render.addEntity(reptile);
     await this.render.loadTilesets(this.map.tilesets);
+
   }
 
   loop() {
@@ -77,7 +78,7 @@ export class Game {
 
   async loadMap(): Promise<Partial<Entities>> {
     const mapData = await this.loadJSON<MapJSON>(
-      '/assets/maps/map_' + this.lvl + '.json'
+      '/assets/maps/Map' + this.lvl + '.json'
     );
     return await this.map.load(mapData);
   }

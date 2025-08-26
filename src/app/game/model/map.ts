@@ -9,7 +9,7 @@ const PATH_TILESETS = 'assets/tilesets/';
 export class Map {
   tilesets: TileSet[] = [];
 
-  async load(mapData: MapJSON): Promise<{terrain: TerrainObject[], objects: GameObject[]}> {
+  async load(mapData: MapJSON): Promise<{terrain: TerrainObject[][], objects: GameObject[]}> {
     this.tilesets = await Promise.all(
       mapData.tilesets.map(async (t) => {
         const tileset = await loadJSON<TileSet>(`${PATH_TILESETS}${t.source}`);
@@ -36,21 +36,23 @@ export class Map {
     return tileset;
   }
 
-  private async loadTerrain(mapData: MapJSON): Promise<TerrainObject[]> {
-    const terrain: TerrainObject[] = [];
-    const layer = mapData.layers.find(
-      (l) => l.name === 'Ground' && l.type === 'tilelayer'
+  private async loadTerrain(mapData: MapJSON): Promise<TerrainObject[][]> {
+    const terrain: TerrainObject[][] = [];
+    const layers = mapData.layers.filter(
+      (l) => l.type === 'tilelayer'
     );
-    if (layer && layer.data) {
+    for (let i = 0; i < layers.length; i++) {
+      const layer = layers[i];
+      const terrainRow: TerrainObject[] = [];
       for (let row = 0; row < layer.height; row++) {
         for (let col = 0; col < layer.width; col++) {
           const id = layer.data[row * layer.width + col];
           const tileset = this.findTileset(id);
           const cols = tileset.columns;
-          const tileX = (id % cols) * tileset.tilewidth;
-          const tileY = Math.floor(id / cols) * tileset.tileheight;
+          const tileX = ((id - tileset.firstgid) % cols) * tileset.tilewidth;
+          const tileY = Math.floor((id - tileset.firstgid) / cols) * tileset.tileheight;
 
-          terrain.push({
+          terrainRow.push({
             gid: id,
             x: col * mapData.tilewidth,
             y: row * mapData.tileheight,
@@ -63,7 +65,9 @@ export class Map {
           });
         }
       }
+      terrain.push(terrainRow);
     }
+
     return terrain;
   }
 

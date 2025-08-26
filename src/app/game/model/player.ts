@@ -29,7 +29,7 @@ export class Player extends Entity {
     height: number,
     tileset: string
   ) {
-    super(101, x, y, width, height, 0, 0, 16, 16, GameObjectType.PLAYER, cfg, name, hp, maxHp, tileset, collider);
+    super(100001, x, y, width, height, 0, 0, 16, 16, GameObjectType.PLAYER, cfg, name, hp, maxHp, tileset, collider);
     this.input = input;
     this.name = name;
     this.lvl = 1;

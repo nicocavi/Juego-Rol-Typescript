@@ -1,14 +1,14 @@
 {
-  "columns": 1,
+  "columns": 22,
   "image": "terrain/TilesetFloor.png",
   "imageheight": 352,
   "imagewidth": 417,
   "margin": 0,
   "name": "BasicTiles",
   "spacing": 0,
-  "tilecount": 2,
-  "tileheight": 64,
-  "tilewidth": 64,
+  "tilecount": 1,
+  "tileheight": 16,
+  "tilewidth": 16,
   "type": "tileset",
   "version": "1.9"
 }

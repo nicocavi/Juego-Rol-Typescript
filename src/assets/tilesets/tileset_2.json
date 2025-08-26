@@ -1,14 +1,14 @@
-{
-  "columns": 24,
-  "image": "terrain/TilesetNature.png",
-  "imageheight": 336,
-  "imagewidth": 384,
-  "margin": 0,
-  "name": "BasicTiles",
-  "spacing": 0,
-  "tilecount": 2,
-  "tileheight": 16,
-  "tilewidth": 16,
-  "type": "tileset",
-  "version": "1.9"
+{ "columns":24,
+ "image":"terrain/TilesetNature.png",
+ "imageheight":336,
+ "imagewidth":384,
+ "margin":0,
+ "name":"tileset_2",
+ "spacing":0,
+ "tilecount":504,
+ "tiledversion":"1.11.2",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.10"
 }

@@ -3,7 +3,7 @@ import { GameObject } from "./gameObject";
 import { TerrainObject } from "./terrainObject";
 
 export interface Entities {
-    terrain: TerrainObject[];
+    terrain: TerrainObject[][];
     objects: GameObject[];
     entities: Entity[];
 }

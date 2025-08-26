@@ -117,31 +117,35 @@ export class Render {
     return tileset;
   }
 
-  drawTerrain(entities: TerrainObject[]): void {
-    for (const {
-      gid,
-      tileX,
-      tileY,
-      x,
-      y,
-      width,
-      height,
-      dHeight,
-      dWidth,
-    } of entities) {
-      const { tile } = this.findTileset(gid);
-      this.drawImage(
-        tile,
+  drawTerrain(terrains: TerrainObject[][]): void {
+    terrains.map( layer => {
+
+      for (const {
+        gid,
         tileX,
         tileY,
+        x,
+        y,
         width,
         height,
-        x - this.camera.x,
-        y - this.camera.y,
+        dHeight,
         dWidth,
-        dHeight
-      );
-    }
+      } of layer) {
+        const { tile } = this.findTileset(gid);
+        this.drawImage(
+          tile,
+          tileX,
+          tileY,
+          width,
+          height,
+          x - this.camera.x,
+          y - this.camera.y,
+          dWidth,
+          dHeight
+        );
+      }
+
+    });
   }
 
   drawObjects(entities: GameObject[]): void {
@@ -167,14 +171,20 @@ export class Render {
   draw(elements: Entities, player: Player, dt: number): void {
     this.clear();
     this.camera.follow(player, dt);
-    const terrain = elements.terrain.filter(({ x, y, height, width }) =>
-      this.camera.viewInCamera(x, y, width, height)
-    );
+    const terrain = this.visibleTerrain(elements.terrain);
     const objects = [...elements.objects, ...elements.entities].filter(
       ({ x, y, height, width }) => this.camera.viewInCamera(x, y, width, height));
     this.drawTerrain(terrain);
     this.drawObjects(objects);
     this.drawCells();
+  }
+
+  private visibleTerrain(terrains: TerrainObject[][]): TerrainObject[][] {
+
+    return terrains.map(terrain => terrain.filter(({ x, y, height, width }) =>
+      this.camera.viewInCamera(x, y, width, height)
+    ));
+
   }
 
   private drawCells(): void {
