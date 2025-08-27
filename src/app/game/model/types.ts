@@ -25,4 +25,17 @@ export interface TileSet {
   tilecount: number;
   tileheight: number;
   tilewidth: number;
+  tiles?: {
+    id: number;
+    objectgroup: {
+      draworder: string;
+      objects: { id: number; x: number; y: number; width: number; height: number }[];
+      id: number;
+      opacity: number;
+      type: string;
+      visible: boolean;
+      x: number;
+      y: number;
+    };
+  }[];
 }

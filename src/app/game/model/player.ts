@@ -7,8 +7,8 @@ import { MovementConfig } from './movementConfig';
 import { Vec2 } from './vec2';
 
 const collider = {
-  origin: { x: 0, y: 12 },
-  width: 16,
+  origin: { x: 2, y: 12 },
+  width: 12,
   height: 4,
 }
 

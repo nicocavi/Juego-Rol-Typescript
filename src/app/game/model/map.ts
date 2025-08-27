@@ -74,11 +74,13 @@ export class Map {
   private async loadObjects(mapData: MapJSON): Promise<GameObject[]> {
     const objects: GameObject[] = [];
     const layer = mapData.layers.find(
-      (l) => l.name === 'Objects' && l.type === 'objectgroup'
+      (l) => l.type === 'objectgroup'
     );
     if (layer && layer.objects) {
-      layer.objects.forEach(({ gid, x, y, width, height, collider }: GameObject) => {
+      layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
       const tileset = this.findTileset(gid);
+      const collider = tileset.tiles?.find( (t:any) => t.id === (gid - tileset.firstgid))?.objectgroup?.objects?.[0];
+      const colliderData = collider ? { origin: { x: collider.x, y: collider.y }, width: collider.width, height: collider.height } : undefined;
       objects.push(
         new GameObject(
             gid,
@@ -91,7 +93,7 @@ export class Map {
             mapData.tilewidth,
             mapData.tileheight,
             GameObjectType.OBSTACLE,
-            collider
+            colliderData
           )
         );
       });

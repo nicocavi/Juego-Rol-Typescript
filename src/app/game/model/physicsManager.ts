@@ -24,7 +24,7 @@ export class PhysicsManager {
     return collisions;
   }
 
-  private getCollider(obj: GameObject): {x: number, y: number, width: number, height: number} {
+  private getCollider(obj: GameObject): {x: number, y: number, width: number, height: number} | null {
     if(obj.collider){
       return {
         x: obj.collider.origin.x + obj.x,
@@ -32,20 +32,17 @@ export class PhysicsManager {
         width: obj.collider.width,
         height: obj.collider.height
       };
-    }else {
-      return {
-        x: obj.x,
-        y: obj.y,
-        width: obj.width,
-        height: obj.height
-      };
     }
+
+    return null;
   }
 
   private overlap(obj1: GameObject, obj2: GameObject): boolean {
 
     const a = this.getCollider(obj1);
     const b = this.getCollider(obj2);
+
+    if(!a || !b) return false;
     
     return !!(
       (a.x < b.x + b.width &&

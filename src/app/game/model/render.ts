@@ -28,7 +28,7 @@ export class Render {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.ctx.imageSmoothingEnabled = false;
-    this.camera = new Camera(10, 10, 16);
+    this.camera = new Camera(22, 20, 16);
   }
 
   async loadTilesets(tilesets: TileSet[]): Promise<void> {
@@ -177,6 +177,7 @@ export class Render {
     this.drawTerrain(terrain);
     this.drawObjects(objects);
     this.drawCells();
+    // this.drawColliders(objects);
   }
 
   private visibleTerrain(terrains: TerrainObject[][]): TerrainObject[][] {
@@ -195,6 +196,16 @@ export class Render {
         const x = col * tileSize;
         const y = row * tileSize;
         this.ctx.strokeRect(x * this.scale, y * this.scale, tileSize * this.scale, tileSize * this.scale);
+      }
+    }
+  }
+
+  private drawColliders(objects: GameObject[]): void {
+    this.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    for (const { x, y, collider } of objects) {
+      if(collider){
+        const screen = this.camera.worldToScreen(x + collider.origin.x, y + collider.origin.y);
+        this.ctx.fillRect(screen.x * this.scale, screen.y * this.scale, collider.width * this.scale, collider.height * this.scale);
       }
     }
   }

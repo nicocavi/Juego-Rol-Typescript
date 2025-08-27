@@ -9,8 +9,8 @@ export class Camera {
   private targetY = 0;
   private moveTimer: number; // acumulador de tiempo
   private delay: number; // tiempo mínimo antes de empezar a mover
-  viewportWidth = 5;
-  viewportHeight = 5;
+  viewportWidth = 20;
+  viewportHeight = 20;
   tileSize: number;
 
   constructor(

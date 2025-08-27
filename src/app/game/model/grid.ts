@@ -44,6 +44,7 @@ export class Grid {
 
     for (const obj of gameObjects) {
       if (obj.collider) {
+        console.log('Collider found:', obj);
         grid[Math.floor(obj.y / this.tileSize)][Math.floor(obj.x / this.tileSize)] = 1;
       }
     }

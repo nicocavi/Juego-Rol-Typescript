@@ -60,7 +60,7 @@ export class Game {
     this.elements.entities.push(reptile);
 
     // Inicializar grid para pathfinding
-    this.grid.initializeGrid(10, 10, this.elements.objects);
+    this.grid.initializeGrid(50, 50, this.elements.objects);
 
     await this.render.addEntity(this.player);
     await this.render.addEntity(reptile);
