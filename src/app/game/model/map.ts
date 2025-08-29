@@ -9,7 +9,7 @@ const PATH_TILESETS = 'assets/tilesets/';
 export class Map {
   tilesets: TileSet[] = [];
 
-  async load(mapData: MapJSON): Promise<{terrain: TerrainObject[][], objects: GameObject[]}> {
+  async load(mapData: MapJSON): Promise<{terrain: TerrainObject[][], objects: GameObject[][]}> {
     this.tilesets = await Promise.all(
       mapData.tilesets.map(async (t) => {
         const tileset = await loadJSON<TileSet>(`${PATH_TILESETS}${t.source}`);
@@ -71,17 +71,19 @@ export class Map {
     return terrain;
   }
 
-  private async loadObjects(mapData: MapJSON): Promise<GameObject[]> {
-    const objects: GameObject[] = [];
-    const layer = mapData.layers.find(
+  private async loadObjects(mapData: MapJSON): Promise<GameObject[][]> {
+    const objects: GameObject[][] = [];
+    const layers = mapData.layers.filter(
       (l) => l.type === 'objectgroup'
     );
-    if (layer && layer.objects) {
+    for (let i = 0; i < layers.length; i++) {
+      const layer = layers[i];
+      const allObjects: GameObject[] = [];
       layer.objects.forEach(({ gid, x, y, width, height }: GameObject) => {
       const tileset = this.findTileset(gid);
       const collider = tileset.tiles?.find( (t:any) => t.id === (gid - tileset.firstgid))?.objectgroup?.objects?.[0];
       const colliderData = collider ? { origin: { x: collider.x, y: collider.y }, width: collider.width, height: collider.height } : undefined;
-      objects.push(
+      allObjects.push(
         new GameObject(
             gid,
             x,
@@ -97,6 +99,7 @@ export class Map {
           )
         );
       });
+      objects.push(allObjects);
     }
     return objects;
   }

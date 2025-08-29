@@ -57,13 +57,13 @@ export class Game {
     this.elements = { ...this.elements, ...terrain };
     this.render = new Render(canvas);
     this.elements.entities.push(this.player);
-    this.elements.entities.push(reptile);
+    // this.elements.entities.push(reptile);
 
     // Inicializar grid para pathfinding
-    this.grid.initializeGrid(50, 50, this.elements.objects);
+    this.grid.initializeGrid(50, 50, [...this.elements.objects[0], ...this.elements.objects[1]]);
 
     await this.render.addEntity(this.player);
-    await this.render.addEntity(reptile);
+    // await this.render.addEntity(reptile);
     await this.render.loadTilesets(this.map.tilesets);
 
   }
@@ -100,7 +100,7 @@ export class Game {
 
       const collisions = this.physicsManager.checkCollisions(
         e,
-        [...this.elements.objects, ...this.elements.entities]
+        [...this.elements.objects[1], ...this.elements.objects[0], ...this.elements.entities]
       );
 
       if (collisions.length > 0) {

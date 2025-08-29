@@ -4,6 +4,6 @@ import { TerrainObject } from "./terrainObject";
 
 export interface Entities {
     terrain: TerrainObject[][];
-    objects: GameObject[];
+    objects: GameObject[][];
     entities: Entity[];
 }

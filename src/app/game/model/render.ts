@@ -148,8 +148,9 @@ export class Render {
     });
   }
 
-  drawObjects(entities: GameObject[]): void {
-    const objects = entities.sort((a, b) => a.y + a.height - (b.y + b.height));
+  drawObjects(entities: GameObject[], overlap = false): void {
+    const objects = overlap ? entities.sort((a, b) => a.y + a.height - (b.y + b.height)) : entities;
+
     for (const object of objects) {
       const { gid, x, y, width, height, sx, sy } = object;
       const { tile } = this.findTileset(gid);
@@ -161,7 +162,7 @@ export class Render {
         width,
         height,
         screen.x,
-        screen.y,
+        screen.y - 16,
         width,
         height
       );
@@ -172,12 +173,18 @@ export class Render {
     this.clear();
     this.camera.follow(player, dt);
     const terrain = this.visibleTerrain(elements.terrain);
-    const objects = [...elements.objects, ...elements.entities].filter(
+    const objectsOverlapOff = elements.objects[0].filter(
       ({ x, y, height, width }) => this.camera.viewInCamera(x, y, width, height));
+    const objectsOverlap = [...elements.objects[1], ...elements.entities].filter(
+      ({ x, y, height, width }) => this.camera.viewInCamera(x, y, width, height));
+    const highGround: TerrainObject[] = terrain.pop() || [];
     this.drawTerrain(terrain);
-    this.drawObjects(objects);
-    this.drawCells();
+    this.drawObjects(objectsOverlapOff, false);
+    this.drawObjects(objectsOverlap, true);
+    this.drawTerrain([highGround]);
+    // this.drawCells();
     // this.drawColliders(objects);
+    // this.drawTileNumber(objects);
   }
 
   private visibleTerrain(terrains: TerrainObject[][]): TerrainObject[][] {
@@ -205,8 +212,18 @@ export class Render {
     for (const { x, y, collider } of objects) {
       if(collider){
         const screen = this.camera.worldToScreen(x + collider.origin.x, y + collider.origin.y);
-        this.ctx.fillRect(screen.x * this.scale, screen.y * this.scale, collider.width * this.scale, collider.height * this.scale);
+        this.ctx.fillRect(screen.x * this.scale, (screen.y - 16) * this.scale, collider.width * this.scale, collider.height * this.scale);
       }
+    }
+  }
+
+  private drawTileNumber(objects: GameObject[]): void {
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+    this.ctx.font = `${6 * this.scale}px Arial`;
+    this.ctx.textAlign = 'center';
+    for (const { x, y, width, height, gid } of objects) {
+      const screen = this.camera.worldToScreen(x + width / 2, y + height / 2);
+      this.ctx.fillText(gid.toString(), screen.x * this.scale, (screen.y - 16) * this.scale);
     }
   }
 }
